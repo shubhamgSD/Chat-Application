@@ -1,72 +1,28 @@
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import javax.swing.SwingUtilities;
 
 public class Client {
-
-	Socket socket;
-	BufferedReader reader;
-	PrintWriter writer;
-	InputStreamReader streamReader;
 	
-	public static void main(String[] args)throws Exception {
-		Client client = new Client();
-		client.go();
-	}
-
-	void go()throws Exception {
-		try {
-
-			socket = new Socket("127.0.1.1", 4991);
-			streamReader = new InputStreamReader(socket.getInputStream());
-			reader = new BufferedReader(streamReader);
-			writer = new PrintWriter(socket.getOutputStream());
-			System.out.println("Client Networking Established:");
-			
-			Thread thread = new Thread(new IncomingReader());
-			thread.start();
-
-			BufferedReader clientInput = new BufferedReader(new InputStreamReader(System.in));
-			String line;
-			while (true) {
-
-				line = clientInput.readLine();// keyboard text Reading
-
-				writer.println(line);// sending text to server
-				writer.flush();
-			}
-
-			
-
-		}
-
-		catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		socket.close();
-		streamReader.close();
-		reader.close();
-		writer.close();
+	public static void main(String[] args)	throws Exception {
 		
-
-	}
-
-	public class IncomingReader implements Runnable {
-
-		public synchronized void run() {
-			String message;
-			try {
-				while ((message = reader.readLine()) != null) {
-					System.out.println("Server: " + message);
+		SwingUtilities.invokeLater(new Runnable(){
+			public void run()
+			{
+				try {
+				SwingContainerDemo ob = new SwingContainerDemo();
+				ob.go();
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
+				catch(Exception ex)
+				{
+					ex.printStackTrace();
+				}
+				 
 			}
-		}
-
+		});
+		
+		
+		
+		
+		
 	}
-
-}
+	}
