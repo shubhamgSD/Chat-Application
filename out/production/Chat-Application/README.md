@@ -1,3 +1,1 @@
 It's just a simple Chat @pplication...
-
-Import project in IntelliJ Idea IDE.
