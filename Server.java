@@ -23,7 +23,7 @@ class Server {
 	
 	void go() throws Exception
 	{
-		serverSocket = new ServerSocket(4991);
+		serverSocket = new ServerSocket(4020);
 		try
 		{
 			while(true)
@@ -44,6 +44,15 @@ class Server {
 
 					line = clientInput.readLine();// keyboard Reading
 
+					
+					if(line.equals("quit"))
+					{
+						serverSocket.close();
+						clientSocket.close();
+						reader.close();
+						writer.close();
+						streamReader.close();
+					}
 					writer.println(line);// sending text to server
 					writer.flush();
 				}
