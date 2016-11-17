@@ -1,6 +1,8 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -19,6 +21,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
+
+import java.sql.*;
 
 public class SwingContainerDemo  {
    private JFrame mainFrame;
@@ -40,6 +44,8 @@ public class SwingContainerDemo  {
    private JScrollPane scrollerInfo;
    private JScrollPane scrollerDisplay;
    
+   private Connection con;
+   
    Socket socket;
 	BufferedReader reader;
 	PrintWriter writer;
@@ -47,14 +53,19 @@ public class SwingContainerDemo  {
    
    
 
-   public SwingContainerDemo(){
+   public SwingContainerDemo() throws ClassNotFoundException, SQLException{
 	   
 	      mainFrame = new JFrame("Title");
 	      mainFrame.setLayout(new BoxLayout(mainFrame.getContentPane(),BoxLayout.Y_AXIS));
-	      mainFrame.setSize(480,350); 
+	      //mainFrame.setLayout(new BorderLayout());
+	      Toolkit kit = Toolkit.getDefaultToolkit();
+	      Dimension screenSize = kit.getScreenSize();
+	      mainFrame.setSize(screenSize.width/3,screenSize.height/3); 
+	      mainFrame.setResizable(false);
+	      mainFrame.setTitle("Chat-Application");
 	      mainFrame.setVisible(true); 
 	      mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	      mainFrame.setMaximumSize(new Dimension(500,500));
+	      //mainFrame.setMaximumSize(new Dimension(500,500));
 	      
 	      
 	      topPanel = new JPanel();
@@ -108,12 +119,27 @@ public class SwingContainerDemo  {
 	      mainFrame.getContentPane().add(bottomPanelC1);
 	      mainFrame.getContentPane().add(bottomPanelC2);
 	      
+	      mainFrame.pack();
+	      
+	      String driver = "com.mysql.jdbc.Driver";
+
+	      Class.forName(driver);
+	      con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chat", "root", "sqlcm10");
+	      System.out.println(con.toString());
+	      String query = "SELECT * FROM messages;";
+	      Statement st = con.createStatement();
+	      ResultSet rs = st.executeQuery(query);
+	      while(rs.next()){
+	    	  String entry = rs.getString("entry");
+	    	  info.append(entry);
+	      }
+	      
    }
    
    void go()	throws Exception {
 		try {
 
-			socket = new Socket("127.0.1.1", 4020);
+			socket = new Socket("127.0.1.1", 4055);
 			streamReader = new InputStreamReader(socket.getInputStream());
 			reader = new BufferedReader(streamReader);
 			writer = new PrintWriter(socket.getOutputStream());
@@ -133,7 +159,11 @@ public class SwingContainerDemo  {
 			String message ;
 			try {
 				while ((message = reader.readLine()) != null) {
-					info.append("Sender: "+message+"\n");
+					String entry = "Server: "+message+"\n";
+					info.append(entry);
+					String query = "INSERT INTO messages VALUES(\"" + entry + "\");";
+					Statement st = con.createStatement();
+			        int val = st.executeUpdate(query);
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -149,13 +179,18 @@ public void actionPerformed(ActionEvent e) {
 	JButton btn =(JButton) e.getSource();
 	if(btn==send){
 		String str = message.getText();
-		info.append("Me: "+str+"\n");
+		String entry = "Client: "+str+"\n";
+		info.append(entry);
 		writer.println(str);
 		writer.flush();
 		message.setText("");
+		String query = "INSERT INTO messages VALUES(\"" + entry + "\");";
+		Statement st = con.createStatement();
+        int val = st.executeUpdate(query);
 	}
 	else if(btn == exit)
 	{
+		con.close();
 		System.exit(0);
 	}
 	}
