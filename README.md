@@ -1,1 +1,3 @@
 It's just a simple Chat @pplication...
+
+Change userName and passWord in SwingContainerDemo.java to your MySQL credentials after cloning to local system.
