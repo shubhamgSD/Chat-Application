@@ -50,6 +50,9 @@ public class SwingContainerDemo  {
 	BufferedReader reader;
 	PrintWriter writer;
 	InputStreamReader streamReader;
+	
+	private String userName = "root";
+	private String passWord = "sqlcm10";
    
    
 
@@ -124,7 +127,7 @@ public class SwingContainerDemo  {
 	      String driver = "com.mysql.jdbc.Driver";
 
 	      Class.forName(driver);
-	      con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chat", "root", "sqlcm10");
+	      con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chat", userName, passWord);
 	      System.out.println(con.toString());
 	      String query = "SELECT * FROM messages;";
 	      Statement st = con.createStatement();
