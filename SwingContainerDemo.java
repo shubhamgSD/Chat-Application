@@ -22,7 +22,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
-import java.sql.*;
+import java.net.*;
 
 public class SwingContainerDemo  {
    private JFrame mainFrame;
@@ -44,31 +44,31 @@ public class SwingContainerDemo  {
    private JScrollPane scrollerInfo;
    private JScrollPane scrollerDisplay;
    
-   private Connection con;
    
-   Socket socket;
-	BufferedReader reader;
-	PrintWriter writer;
-	InputStreamReader streamReader;
+    private Socket socket;
+	private BufferedReader reader;
+	private PrintWriter writer;
+	private InputStreamReader streamReader;
 	
-	private String userName = "root";
-	private String passWord = "sqlcm10";
+	private InetAddress serverIP;
    
    
 
-   public SwingContainerDemo() throws ClassNotFoundException, SQLException{
+   public SwingContainerDemo(InetAddress serverIP){
+	   
+	   this.serverIP = serverIP;
 	   
 	      mainFrame = new JFrame("Title");
 	      mainFrame.setLayout(new BoxLayout(mainFrame.getContentPane(),BoxLayout.Y_AXIS));
-	      //mainFrame.setLayout(new BorderLayout());
+	      
 	      Toolkit kit = Toolkit.getDefaultToolkit();
 	      Dimension screenSize = kit.getScreenSize();
-	      mainFrame.setSize(screenSize.width/3,screenSize.height/3); 
-	      mainFrame.setResizable(false);
+	      mainFrame.setSize(screenSize.width/2,screenSize.height/2); 
+	      //mainFrame.setResizable(false);
+	      
 	      mainFrame.setTitle("Chat-Application");
 	      mainFrame.setVisible(true); 
 	      mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	      //mainFrame.setMaximumSize(new Dimension(500,500));
 	      
 	      
 	      topPanel = new JPanel();
@@ -76,7 +76,7 @@ public class SwingContainerDemo  {
 	      bottomPanelC1 = new JPanel();
 	      bottomPanelC2 = new JPanel();
 	      
-	      message = new JTextField(20);
+	      message = new JTextField(mainFrame.getWidth()/20);
 	      file = new JTextField("To send File(Temporary)",20);
 	      label1 = new JLabel("Message Box");
 	      label2 = new JLabel("       ");
@@ -84,9 +84,9 @@ public class SwingContainerDemo  {
 	      send  = new JButton("Send");
 	      exit = new JButton("Exit");
 	      login = new JButton("Login");
-	      display = new JTextArea("User Info\n",15,15);
+	      display = new JTextArea("User Info\n",mainFrame.getHeight()/20,mainFrame.getWidth()/30);
 	      display.setEditable(false);
-	      info = new JTextArea(15,25);
+	      info = new JTextArea(mainFrame.getHeight()/20,mainFrame.getWidth()*2/30);
 	      info.setEditable(false);
 	     scrollerInfo = new JScrollPane(info);
 	     scrollerDisplay = new JScrollPane(display);
@@ -124,25 +124,13 @@ public class SwingContainerDemo  {
 	      
 	      mainFrame.pack();
 	      
-	      String driver = "com.mysql.jdbc.Driver";
-
-	      Class.forName(driver);
-	      con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chat", userName, passWord);
-	      System.out.println(con.toString());
-	      String query = "SELECT * FROM messages;";
-	      Statement st = con.createStatement();
-	      ResultSet rs = st.executeQuery(query);
-	      while(rs.next()){
-	    	  String entry = rs.getString("entry");
-	    	  info.append(entry);
-	      }
 	      
    }
    
    void go()	throws Exception {
 		try {
 
-			socket = new Socket("127.0.1.1", 4055);
+			socket = new Socket(serverIP, 4055);
 			streamReader = new InputStreamReader(socket.getInputStream());
 			reader = new BufferedReader(streamReader);
 			writer = new PrintWriter(socket.getOutputStream());
@@ -162,11 +150,8 @@ public class SwingContainerDemo  {
 			String message ;
 			try {
 				while ((message = reader.readLine()) != null) {
-					String entry = "Server: "+message+"\n";
+					String entry = message+"\n";
 					info.append(entry);
-					String query = "INSERT INTO messages VALUES(\"" + entry + "\");";
-					Statement st = con.createStatement();
-			        int val = st.executeUpdate(query);
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -187,13 +172,9 @@ public void actionPerformed(ActionEvent e) {
 		writer.println(str);
 		writer.flush();
 		message.setText("");
-		String query = "INSERT INTO messages VALUES(\"" + entry + "\");";
-		Statement st = con.createStatement();
-        int val = st.executeUpdate(query);
 	}
 	else if(btn == exit)
 	{
-		con.close();
 		System.exit(0);
 	}
 	}

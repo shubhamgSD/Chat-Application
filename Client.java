@@ -9,8 +9,10 @@ public class Client {
 			public void run()
 			{
 				try {
-				SwingContainerDemo ob = new SwingContainerDemo();
-				ob.go();
+//				SwingContainerDemo ob = new SwingContainerDemo();
+//				ob.go();
+					
+					ClientLogin loginObject = new ClientLogin();
 				}
 				catch(Exception ex)
 				{

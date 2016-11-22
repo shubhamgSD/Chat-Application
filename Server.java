@@ -6,14 +6,21 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import java.sql.*;
+
 
 class Server {
-	BufferedReader reader;
-	PrintWriter writer;
-	InputStreamReader streamReader;
-	ServerSocket serverSocket;
-	Socket clientSocket;
-	BufferedReader clientInput;
+	private BufferedReader reader;
+	private PrintWriter writer;
+	private InputStreamReader streamReader;
+	private ServerSocket serverSocket;
+	private Socket clientSocket;
+	private BufferedReader clientInput;
+	
+	private String userName = "root";
+	private String passWord = "sqlcm10";
+	
+	private Connection con;
 	
 	public static void main(String[] args)throws Exception {
 		Server server = new Server();
@@ -23,7 +30,7 @@ class Server {
 	
 	void go() throws Exception
 	{
-		serverSocket = new ServerSocket(4020);
+		serverSocket = new ServerSocket(4055);
 		try
 		{
 			while(true)
@@ -34,6 +41,31 @@ class Server {
 				writer = new PrintWriter(clientSocket.getOutputStream());
 				System.out.println("Server Networking Established:");
 				
+				String driver = "com.mysql.jdbc.Driver";
+
+			      Class.forName(driver);
+			      con = DriverManager.getConnection("jdbc:mysql://localhost:3306/", userName, passWord);
+			      //System.out.println(con.toString());
+			      
+			      Statement st = con.createStatement();
+			      st.executeUpdate("CREATE DATABASE IF NOT EXISTS chatDatabase;");
+			      
+			      con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chatDatabase", userName, passWord);
+			      st = con.createStatement();
+			      st.executeUpdate("CREATE TABLE IF NOT EXISTS " +
+			      "entryTable(sender VARCHAR(10)," +
+			    		  "message VARCHAR(50));");
+			      
+			      String query = "SELECT * FROM entryTable;";
+			      ResultSet rs = st.executeQuery(query);
+			      
+			      while(rs.next()){
+			    	  String entry = rs.getString("sender") + " : " + rs.getString("message");
+			    	  writer.println(entry);
+			    	  writer.flush();
+			    	  System.out.println(entry);
+			      }
+				
 				Thread thread = new Thread(new IncomingReader());
 				thread.start();
 				
@@ -43,7 +75,8 @@ class Server {
 				while (true) {
 
 					line = clientInput.readLine();// keyboard Reading
-
+					if(line.equals(null))
+						continue;
 					
 					if(line.equals("quit"))
 					{
@@ -52,9 +85,13 @@ class Server {
 						reader.close();
 						writer.close();
 						streamReader.close();
+						System.exit(0);
 					}
-					writer.println(line);// sending text to server
+					writer.println("Server : " + line);// sending text to server
 					writer.flush();
+					
+					st.executeUpdate("INSERT INTO entryTable VALUES(\"Server\", \"" + line + "\");");
+					
 				}
 				
 			
@@ -76,9 +113,18 @@ class Server {
 
 		public void run() {
 			String message;
+			Statement st = null;
+			try {
+				st = con.createStatement();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			try {
 				while ((message = reader.readLine()) != null) {
-					System.out.println("client: " + message);
+					System.out.println("client : " + message);
+					
+					st.executeUpdate("INSERT INTO entryTable VALUES(\"Client\", \"" + message + "\");");
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
