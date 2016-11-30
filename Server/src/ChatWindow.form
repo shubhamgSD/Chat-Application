@@ -149,11 +149,6 @@
       </SubComponents>
     </Container>
     <Component class="javax.swing.JTextField" name="messageField">
-      <Properties>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="ff" red="ff" type="rgb"/>
-        </Property>
-      </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="sendButton">
       <Properties>
@@ -171,6 +166,7 @@
     <Component class="javax.swing.JButton" name="disconnectClientButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Disconnect Client"/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="disconnectClientButtonActionPerformed"/>

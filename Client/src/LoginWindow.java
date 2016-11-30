@@ -84,7 +84,7 @@ public class LoginWindow extends JFrame {
 
         textField = new JTextField();
         textField.setColumns(10);
-        textField.requestFocusInWindow();
+        
 
         textField_1 = new JTextField();
         textField_1.setColumns(10);
@@ -109,6 +109,7 @@ public class LoginWindow extends JFrame {
 
         label_3 = new JLabel(".");
         
+        textField.requestFocusInWindow();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
         

@@ -251,8 +251,6 @@ public class ChatWindow extends javax.swing.JFrame {
         messagesArea.setRows(5);
         jScrollPane3.setViewportView(messagesArea);
 
-        messageField.setBackground(new java.awt.Color(255, 255, 255));
-
         sendButton.setText("Send");
         sendButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -263,6 +261,7 @@ public class ChatWindow extends javax.swing.JFrame {
         enterMessageLabel.setText("Enter Message :");
 
         disconnectClientButton.setText("Disconnect Client");
+        disconnectClientButton.setEnabled(false);
         disconnectClientButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 disconnectClientButtonActionPerformed(evt);
