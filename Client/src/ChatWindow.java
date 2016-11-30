@@ -112,7 +112,7 @@ public class ChatWindow  {
 	     info.setBorder(border);
 	     display.setBorder(border);
 	     message.setBorder(border);
-             message.requestFocusInWindow();
+             
 	     
 	     topPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 	     send.setBackground(Color.LIGHT_GRAY);
@@ -157,6 +157,7 @@ public class ChatWindow  {
 	      mainFrame.getContentPane().add(bottomPanelC2);
 	      
 	      mainFrame.pack();
+              message.requestFocusInWindow();
               mainFrame.setLocationRelativeTo(null);
 	      mainFrame.setVisible(true);
 	      
