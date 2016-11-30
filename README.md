@@ -1,3 +1,5 @@
-It's just a simple Chat @pplication...
+This is the repository of complete client-server messaging software for desktop.
 
-Change userName and passWord in SwingContainerDemo.java to your MySQL credentials after cloning to local system.
+For development, build separate project of client and server each in netbeans IDE.
+
+Download and add MySQL-connector jar file to the library of server project.
